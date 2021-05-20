@@ -1,0 +1,8 @@
+---
+# tasks file for install-hdfs
+
+- name: include vars
+  include_vars: "{{ playbook_dir }}/config.yml"
+
+- include : install_hdfs.yml
+

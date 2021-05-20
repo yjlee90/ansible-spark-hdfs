@@ -1,0 +1,23 @@
+---
+- name: include vars
+  include_vars: "{{ playbook_dir }}/config.yml"
+
+
+- name : remove old install dir
+  file : 
+    path : "{{ install_dir }}"
+    state: absent
+
+- name : create install dir
+  file : 
+    path : "{{ install_dir }}"
+    state: present
+
+- include: remove old install dir
+- include: install_java.yml
+
+- import_task: install_java.yml
+  when: "install_java == True"
+
+- import_tasks: useful_scripts.yml
+  

@@ -1,0 +1,11 @@
+---
+- hosts: all
+  connection: local
+  become_user: root
+  become: true 
+  gather_facts: true 
+  
+  roles:
+    # - init-server
+    - install_hdfs
+    # - install-spark

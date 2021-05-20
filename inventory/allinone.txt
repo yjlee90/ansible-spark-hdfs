@@ -1,0 +1,8 @@
+[all]
+localhost ansible_user=root  ansible_connection=local
+
+[nodes]
+localhost ansible_user=root  ansible_connection=local
+
+[master]
+localhost ansible_user=root  ansible_connection=local

@@ -1,0 +1,29 @@
+---
+common:
+  java_version: 8u291
+  java_home: /opt/jdk/openjdk-8
+  java_local_archive_dir: '{{ playbook_dir }}/files'
+  java_is_default_installation: yes
+
+
+# Location Java installations packages can be found on the local box
+# local packages will be uses in preference to downloading new packages.
+java_local_archive_dir: '{{ playbook_dir }}/files'
+
+# Wether to use installation packages in the local archive (if available)
+java_use_local_archive: yes
+
+# If this is the default installation, profile scripts will be written to set
+# the JAVA_HOME environment variable and add the bin directory to the PATH
+# environment variable.
+
+java_fact_group_name: java
+
+# Timeout for JDK download response in seconds
+java_download_timeout_seconds: 600
+
+common:
+  java_version: 8u201
+  java_home: "/usr/java/jdk1.8.0_201-amd64"
+  java_download: "http://download.oracle.com/otn-pub/java/jdk/8u201-b09/42970487e3af4f5aa5bca3f542482c60/jdk-8u201-linux-x64.rpm"
+  java_jce_download: "http://download.oracle.com/otn-pub/java/jce/8/jce_policy-8.zip"
