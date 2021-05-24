@@ -7,5 +7,5 @@
   
   roles:
     # - init-server
-    - install_hdfs
-    # - install-spark
+    #- install_hdfs
+    - install-spark

@@ -5,5 +5,13 @@
     state: directory
     mode: 0700
 
+# - name: Generate SSH key
+#   openssh_keypair:
+#     path: "~/.ssh/id_rsa_hadoop"
+#     type: rsa
+#     size: 4096
+#     state: present
+#     force: no
+
 - name: ssh config file should be available
   template: src="config.j2" dest="~/.ssh/config" mode="600"

@@ -1,7 +1,7 @@
 ---
 spark:
-  version: 2.4.0
-  hadoop_version: 2.9.2
+  version: 2.4.7
+  hadoop_version: 2.10.1
   working_dir: /tmp/spark/data
   master_port: 7077
   worker_work_port: 65000
