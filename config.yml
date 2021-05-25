@@ -2,41 +2,40 @@
 user_session: root
 is_offline: true
 
-# Ansible 
-# ansible_connection: ssh
 ansible_user: root
 ansible_ssh_private_key_file: ~/.ssh/id_rsa
 gather_facts: True
 gathering: smart
 host_key_checking: False
 
-# JAVA
-java_home: /opt/jdk/openjdk-8
-jdk_install_file: "jdk-8u291-linux-x64.tar.gz"
-
-# Installation
+# 
 install_temp_dir: /tmp/ansible-install
 install_dir: /opt
 
-# Hadoop
-#   server의 추가된 디스크에 설치를 한다.
-hadoop_home : /opt/hadoop/hadoop-2.10.1
-hadoop_install_file: "hadoop-2.10.1-src.tar.gz"
+# Common
+common:
+  java:
+    version: 8u291
+    java_home: /opt/java/openjdk-8
+    offline_archive_dir: '{{ playbook_dir }}/files'
+    archive: "jdk-8u291-linux-x64.tar.gz"
 
 # Hadoop
 hadoop:
   version: 2.10.1
-  hadoop_archive: hadoop-2.10.1.tar.gz
-  hadoop_install_dir: hadoop-2.10.1
+  # installation
+  archive: "hadoop-2.10.1-src.tar.gz"
+  download_url: https://archive.apache.org/dist/hadoop/common/
+  install_dir: "/opt/hadoop/hadoop-2.10.1"
+  # directories
   data_dir: /var/hadoop/data
   name_dir: /var/hadoop/name
   temp_dir: /tmp/hadoop/hdfs/tmp
-  download_location: https://archive.apache.org/dist/hadoop/common/
+  hadoop_home : /opt/hadoop/hadoop-2.10.1
+  # users
   user: "hdfs"               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
   user_shell: "/bin/false"    # the hdfs user's default shell
-  re_install: True
-  hadoop_home : /opt/hadoop/hadoop-2.10.1
 
 spark:
   version: 2.4.7

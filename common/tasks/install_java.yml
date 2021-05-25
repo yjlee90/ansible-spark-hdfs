@@ -4,82 +4,70 @@
   register: is_installed
   ignore_errors: True
 
-- name: create Java home directory
-  become: yes
-  file:
-    path: '{{ java_home }}'
-    state: directory
-    owner: root
-    group: root
-    mode: 'u=rwx,go=rx'
-    recurse: yes
-  when:
-    - not is_installed
+- name: Check if java is installed
+  set_fact:
+    java_home : "{{ common.java.java_home }}"
+    java_archive: "{{ common.java.archive}}"
 
-- name: Copy and Install Java
-  become: yes
-  unarchive:
-    src: "{{ item }}"
-    dest: "{{ java_home }}"
-    mode: 0755
-    extra_opts: [--strip-components=1]
-  with_items:
-    - "{{ jdk_install_file }}"
-  when:
-    - is_offline
-    - not is_installed
+- block:
+  - name: Create Java home directory
+    become: yes
+    file:
+      path: '{{ java_home }}'
+      state: directory
+      owner: root
+      group: root
+      mode: 'u=rwx,go=rx'
+      recurse: yes
 
-- name: Install java using apt
-  become: yes
-  apt:
-    name: openjdk-8-jdk
-    state: present
-  when:
-    - not is_offline
-    - not is_installed
+  # Install offline
+  - name: Copy and Install Java
+    become: yes
+    unarchive:
+      src: "{{ java_archive }}"
+      dest: "{{ java_home }}"
+      mode: 0755
+      extra_opts: [--strip-components=1]
+    when:
+      - is_offline
 
+  # Install online
+  - name: Install java using apt
+    become: yes
+    apt:
+      name: openjdk-8-jdk
+      state: present
+    when:
+      - not is_offline
 
-# Set JAVA_HOME
-- name: make sure /etc/profile.d exists
-  become: yes
-  file:
-    path: /etc/profile.d
-    state: directory
-    owner: root
-    group: root
-    mode: 'u=rwx,go=rx'
-  when:
-    - java_is_default_installation
-    - not is_installed
+  # Set JAVA_HOME
+  - name: Make sure /etc/profile.d exists
+    become: yes
+    file:
+      path: /etc/profile.d
+      state: directory
+      owner: root
+      group: root
+      mode: 'u=rwx,go=rx'
 
-- name: export JAVA_HOME and add to PATH
-  become: yes
-  template:
-    src: java.sh.j2
-    dest: /etc/profile.d/java.sh
-    owner: root
-    group: root
-    mode: 'u=rw,go=r'
-  when:
-    - java_is_default_installation
-    - not is_installed
+  - name: export JAVA_HOME and add to PATH
+    become: yes
+    template:
+      src: java.sh.j2
+      dest: /etc/profile.d/java.sh
+      owner: root
+      group: root
+      mode: 'u=rw,go=r'
 
-- name: update alternatives for java
-  alternatives:
-    name: java
-    path: "{{ java_home }}/bin/java"
-    link: /usr/bin/java
-    priority: 20000
-    #/usr/lib/java10/jdk-10.0.1/bin/java
-  when:
-    - java_is_default_installation
-    - not is_installed
+  - name: update alternatives for java
+    alternatives:
+      name: java
+      path: "{{ java_home }}/bin/java"
+      link: /usr/bin/java
+      priority: 20000
 
-- name: set java home as environment variable
-  blockinfile:
-    insertafter: EOF
-    path: /etc/environment
-    block: export JAVA_HOME="{{ java_home }}" 
-  when:
-    - java_is_default_installation
-    - not is_installed
+  - name: set java home as environment variable
+    blockinfile:
+      insertafter: EOF
+      path: /etc/environment
+      block: export JAVA_HOME="{{ java_home }}" 

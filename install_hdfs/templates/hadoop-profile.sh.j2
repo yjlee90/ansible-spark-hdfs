@@ -1,10 +1,20 @@
-export HADOOP_PREFIX={{ install_dir }}/hadoop-{{ hadoop.version }}
-export HADOOP_COMMON_HOME={{ install_dir }}/hadoop-{{ hadoop.version }}
-export HADOOP_HDFS_HOME={{ install_dir }}/hadoop-{{ hadoop.version }}
-export HADOOP_MAPRED_HOME={{ install_dir }}/hadoop-{{ hadoop.version }}
-#export HADOOP_YARN_HOME={{ install_dir }}/hadoop-{{ hadoop.version }}
-export HADOOP_CONF_DIR={{ install_dir }}/hadoop-{{ hadoop.version }}/etc/hadoop
-#export YARN_CONF_DIR={{ install_dir }}/hadoop-{{ hadoop.version }}/etc/hadoop
+#!/bin/bash
 
-export HADOOP_HOME={{ install_dir }}/hadoop-{{ hadoop.version }}
-export PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH
+{{ ansible_managed | comment }}
+export HADOOP_HOME={{ hadoop.hadoop_home }}
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_PREFIX=$HADOOP_HOME
+
+# HADOOP etc
+export HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native 
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+
+# YARN
+export YARN_HOME=$HADOOP_HOME
+export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
+
+# PATH
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin

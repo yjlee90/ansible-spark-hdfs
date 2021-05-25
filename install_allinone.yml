@@ -6,6 +6,6 @@
   gather_facts: true 
   
   roles:
-    # - init-server
-    #- install_hdfs
-    - install-spark
+    - common
+    - install_hdfs
+    #    - install-spark

@@ -11,7 +11,6 @@
 #   when: 
 #     - is_offline
 
-
 - name: Set HDFS fact
   set_fact: hdfs_installed=True
 
@@ -44,7 +43,6 @@
   file:
     path: "{{ hadoop.data_dir }}/"
     state: absent
-  when: "hadoop.re_install == True"
   
 - name: create hadoop data directory
   file:
@@ -82,45 +80,46 @@
 
 - name: create install directory
   file:
-    path: "{{ install_dir }}/{{ hadoop.hadoop_install_dir }}"
+    path: "{{ hadoop.install_dir }}"
     state: directory
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
   become: true
 
-- debug:
-     msg: "Downloading Hadoop from: {{ hadoop.download_location }}/hadoop-{{ hadoop.version }}/{{ hadoop.hadoop_archive }}"
 
-# Offline
+# Install Offline
 - name: Copy and Install Hadoop with archive
   become: yes
   unarchive:
     src: "hadoop-{{ hadoop.version }}.tar.gz"
-    dest: "{{ install_dir }}/{{ hadoop.hadoop_install_dir }}"
+    dest: "{{ hadoop.install_dir }}"
     mode: 0755
     extra_opts: [--strip-components=1]
   when:
     - is_offline
 
+# Install Online
+- block: 
+  - debug:
+      msg: "Downloading Hadoop from: {{ hadoop.download_url }}/hadoop-{{ hadoop.version }}/{{ hadoop.archive }}"
+  - name: Download hadoop
+    get_url:
+      url: "{{ hadoop.download_location }}/hadoop-{{ hadoop.version }}/{{ hadoop.hadoop_archive }}"
+      dest: "{{ install_temp_dir }}/{{ hadoop.hadoop_archive }}"
 
-# Online
-- name: Download hadoop
-  get_url:
-    url: "{{ hadoop.download_location }}/hadoop-{{ hadoop.version }}/{{ hadoop.hadoop_archive }}"
-    dest: "{{ install_temp_dir }}/{{ hadoop.hadoop_archive }}"
+  - name: unarchive to the install directory
+    unarchive:
+      src: "{{ install_temp_dir }}/{{ hadoop.hadoop_archive }}"
+      dest: "{{ hadoop.install_dir }}"
+      mode: 0755
+      extra_opts: [--strip-components=1]
   when: not is_offline
 
-- name: unarchive to the install directory
-  unarchive:
-    src: "{{ install_temp_dir }}/{{ hadoop.hadoop_archive }}"
-    dest: "{{ install_dir }}/{{ hadoop.hadoop_install_dir }}"
-    mode: 0755
-    extra_opts: [--strip-components=1]
-  when: not is_offline
 
+# Setting configurations templates
 - name: Create config directory
   file:
-    path: "{{ install_dir }}/{{ hadoop.hadoop_install_dir }}/etc/hadoop"
+    path: "{{ hadoop.install_dir }}/etc/hadoop"
     state: directory
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
@@ -129,25 +128,40 @@
 - name: set core-site.xml
   template:
     src: "core-site.xml.j2"
-    dest: "{{ install_dir }}/{{ hadoop.hadoop_install_dir }}/etc/hadoop/core-site.xml"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/core-site.xml"
 
 - name: set hadoop-env.sh
   template:
     src: "hadoop-env.sh.j2"
-    dest: "{{ install_dir}}/{{ hadoop.hadoop_install_dir }}/etc/hadoop/hadoop-env.sh"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/hadoop-env.sh"
 
 - name: set hdfs-site.xml
   template: 
     src: "hdfs-site.xml.j2"
-    dest: "{{ install_dir}}/{{ hadoop.hadoop_install_dir }}/etc/hadoop/hdfs-site.xml"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/hdfs-site.xml"
+
+- name: set mapred-site.xml
+  template: 
+    src: "mapred-site.xml.j2"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/mapred-site.xml"
+
+- name: set yarn-site.xml
+  template: 
+    src: "yarn-site.xml.j2"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/yarn-site.xml"
 
 - name: set slaves
   template:
     src: "slaves.j2"
-    dest: "{{ install_dir}}/{{ hadoop.hadoop_install_dir }}/etc/hadoop/slaves"
+    dest: "{{ hadoop.install_dir }}/etc/hadoop/slaves"
   become: true
 
 # Environment setup.
+- name: Clean hadoop profile
+  file:
+    path : /etc/profile.d/hadoop-profile.sh
+    state: absent
+
 - name: add hadoop profile to startup
   template:
     src: hadoop-profile.sh.j2
@@ -155,14 +169,8 @@
     mode: 0644
 
 - name: format hdfs
-  shell: "bin/hdfs namenode -format"
+  shell: "hdfs namenode -format"
   args:
-      chdir: "{{ install_dir}}/{{ hadoop.hadoop_install_dir }}"
+      chdir: "{{ hadoop.install_dir}}"
   when: (inventory_hostname in groups['master'])
-
-   
-
-  
-   
-  
 
