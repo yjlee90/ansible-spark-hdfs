@@ -6,6 +6,6 @@
   gather_facts: true 
   
   roles:
-    - common
-    - install_hdfs
-    #    - install-spark
+          #    - common
+          #- install_hdfs
+    - install-spark
