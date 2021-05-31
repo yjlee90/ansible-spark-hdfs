@@ -37,9 +37,18 @@
 
 
 
+# 사용법
+1. inventory 폴더 아래 hosts에 IP, hostname 입력
+2. set_ssh.sh  실행
 
 
+# template 변경사항
+- spark-env.sh.j2 
+  - spark-master-ip 주소 변경 필요
 
 
-
+# 안되는 것
+21.05.28
+HDFS datanode 연결 안됨
+spark worker  연결 안됨
 

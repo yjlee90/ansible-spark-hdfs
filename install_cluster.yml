@@ -1,12 +1,5 @@
 ---
-- hosts:
-    - localhost
-  become_user: root
-  become: true 
-  gather_facts: true 
-  
-
-  roles:
-    - common
-    - install-hdfs
-    - install-spark
+- import_playbook: common.yml
+- import_playbook: install_hdfs.yml
+- import_playbook: install_spark.yml
+  #- import_playbook: post_deploy.yml

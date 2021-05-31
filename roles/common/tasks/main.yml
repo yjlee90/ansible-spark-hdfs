@@ -2,6 +2,7 @@
 - name: include vars
   include_vars: "{{ playbook_dir }}/config.yml"
 
+#- include: ssh_config.yml
 - name : Remove old install dir
   file : 
     path : "{{ install_dir }}"

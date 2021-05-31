@@ -43,7 +43,7 @@
   args:
       chdir: "{{ spark.install_dir }}"
   ignore_errors: yes
-  when: inventory_hostname in groups['master']
+  when: inventory_hostname in groups['spark-master']
 
 # Online
 - block:
@@ -72,6 +72,15 @@
     group: "{{ spark.user }}"
   become: true
 
+- name: create spark working directory
+  file:
+    path: "{{ spark.working_dir }}"
+    state: directory
+    owner: "{{ spark.user }}"
+    group: "{{ spark.user }}"
+  become: true
+
+
 - name: set spark-env.sh
   template:
     src: "spark-env-sh.j2"
@@ -93,3 +102,12 @@
     src: spark-profile.sh.j2
     dest: /etc/profile.d/spark-profile.sh
     mode: 0644
+
+# External jar libaray 
+- name: External jar library settings
+  copy:
+    src: "{{ item }}"
+    dest: "{{ spark.spark_home }}/jars"
+  with_items:
+  - "{{ hadoop.hadoop_home}}/share/hadoop/common/lib/slf4j-api-1.7.25.jar"
+  - "{{ hadoop.hadoop_home}}/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar"

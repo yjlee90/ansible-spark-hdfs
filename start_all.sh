@@ -1,0 +1,1 @@
+/opt/hadoop/hadoop-2.10.1/sbin/start-all.sh

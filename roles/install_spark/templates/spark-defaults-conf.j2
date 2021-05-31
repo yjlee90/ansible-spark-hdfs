@@ -1,0 +1,4 @@
+spark.master yarn
+spark.eventLog.enabled true
+spark.eventLog.dir hdfs://{{ groups['spark-master'][0] }}:9000/logs/eventLog
+spark.history.fs.logDirectory $SPARK_HOME/logs/eventLog

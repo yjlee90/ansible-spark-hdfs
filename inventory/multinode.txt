@@ -1,7 +1,20 @@
-[hadoop_namenodes]
-localhost ansible_user=root ansible_password=<password> ansible_connection=ssh
+[deploy]
+bigdata-spark-hdfs-1 ansible_connection=local
 
-[hadoop_datanodes]
-localhost ansible_user=root ansible_password=<password> ansible_connection=ssh
-192.168.65.235 ansible_user=root ansible_password=<password> ansible_connection=ssh
-192.168.654.40 ansible_user=root ansible_password=<password> ansible_connection=ssh
+[master]
+bigdata-spark-hdfs-1 ansible_connection=local
+
+[nodes]
+#bigdata-spark-hdfs-1
+bigdata-spark-hdfs-2
+bigdata-spark-hdfs-3
+
+[spark:children]
+spark-master
+spark-worker
+
+[spark-master:children]
+master
+
+[spark-worker:children]
+nodes

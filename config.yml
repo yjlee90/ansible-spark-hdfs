@@ -48,7 +48,7 @@ spark:
   master_ui_port: 8080
   worker_ui_port: 8085
   download_location: https://archive.apache.org/dist/spark/
-  user: "spark"               # the name of the (OS)user created for spark
+  user: "root"               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
   user_shell: "/bin/false"    # the spark user's default shell
 

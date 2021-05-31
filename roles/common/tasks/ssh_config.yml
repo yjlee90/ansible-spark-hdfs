@@ -1,0 +1,31 @@
+---
+- block:
+  - name: create user ssh folder
+    file:
+      path: "~/.ssh/"
+      state: directory
+      mode: 0700
+
+  - name: Generate SSH key
+    openssh_keypair:
+      path: "~/.ssh/id_rsa_symphony"
+      type: rsa
+      size: 4096
+      state: present
+      force: no
+
+  - name: ssh config file should be available
+    template: src="config.j2" dest="~/.ssh/config" mode="600"
+
+  - name: ssh config file should be available
+    copy:
+      src: "{{ playbook_dir }}/{{ item.0 }}_{{ item.1 }}_key"
+      dest: "/etc/ssh/ssh_host_{{ item.0 }}_key{{ item.1 }}"
+    with_nested:
+    - [ 'rsa', 'dsa' ]
+    - [ '', '.pub' ]
+    notify:
+    - Restart sshd
+    loop_control:
+      label: "/etc/ssh/ssh_host_{{ item.0 }}_key{{ item.1 }}"
+  when: inventory_hostname in groups['deploy']
