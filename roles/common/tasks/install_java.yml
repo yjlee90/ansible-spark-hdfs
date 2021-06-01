@@ -70,4 +70,6 @@
     blockinfile:
       insertafter: EOF
       path: /etc/environment
-      block: export JAVA_HOME="{{ java_home }}" 
+      block: 
+        export JAVA_HOME="{{ java_home }}" 
+

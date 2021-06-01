@@ -1,31 +1,38 @@
 ---
 - block:
-  - name: create user ssh folder
-    file:
-      path: "~/.ssh/"
-      state: directory
-      mode: 0700
-
   - name: Generate SSH key
     openssh_keypair:
-      path: "~/.ssh/id_rsa_symphony"
+      path: "~/.ssh/id_rsa"
       type: rsa
       size: 4096
       state: present
       force: no
+    become: True
+    become_user: "{{ hadoop.user }}"
 
-  - name: ssh config file should be available
-    template: src="config.j2" dest="~/.ssh/config" mode="600"
-
-  - name: ssh config file should be available
-    copy:
-      src: "{{ playbook_dir }}/{{ item.0 }}_{{ item.1 }}_key"
-      dest: "/etc/ssh/ssh_host_{{ item.0 }}_key{{ item.1 }}"
+  - name: Fetch all public ssh keys
+    shell: cat ~/.ssh/id_rsa.pub
+    register: ssh_keys
+    tags:
+      - ssh
+    become: True
+    become_user: "{{ hadoop.user }}"
+    
+  - name: Check keys
+    debug: msg= "{{ ssh_keys.stdout }}"
+    tags:
+      - ssh
+  
+  - name: Deploy keys on all servers
+    authorized_key: 
+      user: hadoop
+      key: "{{ item[0] }}"
+      state: present
+    delegate_to: "{{ item[1] }}"
     with_nested:
-    - [ 'rsa', 'dsa' ]
-    - [ '', '.pub' ]
-    notify:
-    - Restart sshd
-    loop_control:
-      label: "/etc/ssh/ssh_host_{{ item.0 }}_key{{ item.1 }}"
-  when: inventory_hostname in groups['deploy']
+      - "{{ ssh_keys.stdout }}"
+      - "{{ groups['nodes']}}"
+    become: True
+    become_user: "{{ hadoop.user }}"
+
+  when: inventory_hostname in groups['master']

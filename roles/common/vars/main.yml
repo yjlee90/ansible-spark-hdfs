@@ -1,5 +1,0 @@
----
-# vars file for init-server
-
-java_use_local_archive: true
-

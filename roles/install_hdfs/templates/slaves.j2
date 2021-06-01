@@ -1,4 +1,7 @@
-{% for host in groups['nodes'] %}
+{% for host in groups['hdfs-datanode'] %}
+{% if host == groups['master'][0] %}
+localhost
+{% else %}
 {{ hostvars[host]['ansible_hostname'] }}
-
+{% endif %}
 {% endfor %}

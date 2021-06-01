@@ -1,2 +1,2 @@
 #!/bin/bash
-ansible-playbook -i inventory/multinode.txt install_cluster.yml  -vv
+ansible-playbook -i inventory/multinode install_cluster.yml  -vv

@@ -52,3 +52,16 @@
 HDFS datanode 연결 안됨
 spark worker  연결 안됨
 
+
+# inventory
+Category 변경 X
+
+# Role 
+1. deploy_init 
+- ansible deploy server에서 다른 노드들에 접속할 수 있도록 Key를 등록시키는 Role
+
+2. Common
+- 모든 서버에 `/etc/hosts` 에 IP 및 호스트 등록, Master -> Workes 에 접근할 수 있도록 key 등록,
+- Java openjdk 1.8 설치
+- [ ] environment.tar.gz, alternatives 를 이용하여 Python 설치
+

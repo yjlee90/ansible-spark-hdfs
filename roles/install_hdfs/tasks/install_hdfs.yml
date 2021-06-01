@@ -23,7 +23,7 @@
     groups: "{{hadoop.user_groups | join(',')}}"
 
 - name: Define number of nodes
-  set_fact: number_of_nodes="{{groups['nodes'] | length | int }}"
+  set_fact: number_of_nodes="{{groups['hdfs-datanode'] | length | int }}"
 
 - debug:
     msg: "Number of data nodes: {{ number_of_nodes }}"
@@ -43,19 +43,24 @@
   file:
     path: "{{ hadoop.data_dir }}/"
     state: absent
-  
+  become: true
+  become_user: root
+
 - name: create hadoop data directory
   file:
     path: "{{ hadoop.data_dir }}"
     state: directory
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
-  become: True
+  become: true
 
 - name: Remove pre-existent hadoop name directory
   file:
     path: "{{ hadoop.name_dir }}"
     state: absent
+  become: true
+  become_user: root
+  
   
 - name: Create hadoop name directory
   file:
@@ -85,6 +90,7 @@
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
   become: true
+  become_user: root
 
 
 # Install Offline
@@ -161,16 +167,27 @@
   file:
     path : /etc/profile.d/hadoop-profile.sh
     state: absent
+  become: true
+  become_user: root
 
 - name: add hadoop profile to startup
   template:
     src: hadoop-profile.sh.j2
     dest: /etc/profile.d/hadoop-profile.sh
     mode: 0644
+  become: true
+  become_user: root
 
 - name: format hdfs
-  shell: "hdfs namenode -format"
+  shell: "bin/hdfs namenode -format"
   args:
-      chdir: "{{ hadoop.install_dir}}"
-  when: (inventory_hostname in groups['master'])
+      chdir: "{{ hadoop.hadoop_home }}"
+  when: inventory_hostname in groups['hdfs-namenode']
 
+
+- name: "Starting HDFS daemons"
+  ignore_errors: yes
+  command: "{{ hadoop.hadoop_home}}/sbin/start-all.sh"
+  become: true
+  become_user: hadoop
+  when: inventory_hostname in groups['hdfs-namenode']

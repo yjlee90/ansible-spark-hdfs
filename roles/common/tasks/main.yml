@@ -2,7 +2,11 @@
 - name: include vars
   include_vars: "{{ playbook_dir }}/config.yml"
 
-#- include: ssh_config.yml
+# ssh, host setting
+- include: register_hosts.yml
+- include: ssh_config.yml
+
+# clean
 - name : Remove old install dir
   file : 
     path : "{{ install_dir }}"
@@ -13,6 +17,5 @@
     path : "{{ install_dir }}"
     state: directory
 
+# install java
 - include: install_java.yml
-
-  

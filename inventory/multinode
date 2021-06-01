@@ -1,0 +1,39 @@
+[deploy]
+localhost
+
+[nodes]
+bigdata-spark-hdfs-1  ansible_host=192.168.65.125 
+bigdata-spark-hdfs-2  ansible_host=192.168.65.240
+bigdata-spark-hdfs-3  ansible_host=192.168.65.247
+
+[master]
+bigdata-spark-hdfs-1  ansible_host=192.168.65.125
+
+[worker]
+bigdata-spark-hdfs-2  ansible_host=192.168.65.240
+bigdata-spark-hdfs-3  ansible_host=192.168.65.247
+
+# HDFS
+
+[hdfs:children]
+hdfs-namenode
+hdfs-datanode
+
+[hdfs-namenode:children]
+master
+
+[hdfs-datanode:children]
+master
+nodes
+
+# SPARK
+
+[spark:children]
+spark-master
+spark-worker
+
+[spark-master:children]
+master
+
+[spark-worker:children]
+nodes

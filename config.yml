@@ -33,9 +33,9 @@ hadoop:
   temp_dir: /tmp/hadoop/hdfs/tmp
   hadoop_home : /opt/hadoop/hadoop-2.10.1
   # users
-  user: "hdfs"               # the name of the (OS)user created for spark
+  user: "hadoop"               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
-  user_shell: "/bin/false"    # the hdfs user's default shell
+  user_shell: "/bin/bash"    # the hdfs user's default shell
 
 spark:
   version: 2.4.7
@@ -48,9 +48,9 @@ spark:
   master_ui_port: 8080
   worker_ui_port: 8085
   download_location: https://archive.apache.org/dist/spark/
-  user: "root"               # the name of the (OS)user created for spark
+  user: "hadoop"               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
-  user_shell: "/bin/false"    # the spark user's default shell
+  user_shell: "/bin/bash"    # the spark user's default shell
 
   env_extras: {}
   defaults_extras: {}

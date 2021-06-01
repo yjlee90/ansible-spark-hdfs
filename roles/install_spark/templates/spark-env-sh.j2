@@ -9,6 +9,6 @@ SPARK_MASTER_PORT={{ spark.master_port }}
 SPARK_WORKER_PORT={{ spark.worker_work_port }}
 SPARK_WORKER_WEBUI_PORT={{ spark.worker_ui_port }} #Avoid conflict with kafka ports
 
-{% for key, value in spark.env_extras.items() | sort %}
-export {{ key }}="{{ value }}"
-{% endfor %}
+#{% for key, value in spark.env_extras.items() | sort %}
+#export {{ key }}="{{ value }}"
+#{% endfor %}

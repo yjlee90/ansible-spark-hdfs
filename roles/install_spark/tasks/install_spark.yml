@@ -6,13 +6,9 @@
         state=present
         groups="{{ spark.user_groups | join(',') }}"
 
-- name: set spark fact
-  set_fact: spark_installed=True
-
 - name: set spark archive fact
   set_fact:
     spark_archive: spark-{{ spark.version }}-bin-hadoop{{ spark.hadoop_version }}.tgz
-
 
 - name: create install directory
   file:
@@ -26,7 +22,7 @@
 - name: Copy and install spark offline
   become: yes
   unarchive:
-    src: "spark-{{ spark.version }}-bin-without-hadoop.tgz"
+    src: "spark-{{ spark.version }}-bin-hadoop2.7.tgz"
     dest: "{{ spark.install_dir }}"
     mode: 0755
     extra_opts: [--strip-components=1]
@@ -35,15 +31,17 @@
 
 
 - name: define number of spark workers
-  set_fact: number_of_workers="{{ groups['nodes'] | length | int }}"
+  set_fact: number_of_workers="{{ groups['workers'] | length | int }}"
 
 
 - name: stop spark
   shell: "sbin/stop-all.sh"
   args:
-      chdir: "{{ spark.install_dir }}"
+      chdir: "{{ spark.spark_home }}"
   ignore_errors: yes
-  when: inventory_hostname in groups['spark-master']
+  when: "{{ spark.reinstall }}"
+  
+
 
 # Online
 - block:

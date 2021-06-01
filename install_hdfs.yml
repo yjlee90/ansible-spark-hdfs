@@ -1,7 +1,7 @@
 ---
 - hosts:
-    - all
-  become_user: root
+    - hdfs
+  become_user: hadoop
   become: true 
   gather_facts: true 
   

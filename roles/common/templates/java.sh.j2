@@ -2,5 +2,5 @@
 
 {{ ansible_managed | comment }}
 
-export JAVA_HOME="{{ common.java.java_home }}"
-export PATH="${JAVA_HOME}/bin:${PATH}"
+export JAVA_HOME={{ common.java.java_home }}
+export PATH=${JAVA_HOME}/bin:${PATH}
