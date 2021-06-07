@@ -1,0 +1,62 @@
+---
+- name: Set symphony fact
+  set_fact:
+    symphony_home: /home/hadoop/symphony
+
+- name: delete Symphon python home directory
+  become: yes
+  file:
+    path: '{{ symphony_home }}/venv'
+    state: absent 
+
+- name: Create Symphon python home directory
+  become: yes
+  file:
+    path: '{{ symphony_home }}/venv'
+    state: directory
+    owner: "{{ hadoop.user }}"
+    group: "{{ hadoop.user }}"
+    mode: 'u=rwx,go=rx'
+    recurse: yes
+    
+     Install offline
+- name: Unarchive environment.tar.gz for python environment
+  become: yes
+  unarchive:
+    src: "environment.tar.gz"
+    dest: "{{ symphony_home }}/venv"
+    mode: 0755
+    
+- name: update alternatives for python 
+  become: yes
+  become_user: root
+  alternatives:
+    name: python
+    path: "{{ symphony_home }}/venv/bin/python"
+    link: /usr/bin/python
+    priority: 10000
+
+# Spark Job
+- block:
+  - name: Unarchive symphony_project for python environment
+    become: yes
+    copy:
+      src: "prediction_wo_venv.tar"
+      dest: "{{ symphony_home }}"
+      owner: "{{ hadoop.user }}"
+      group: "{{ hadoop.user }}"
+
+  - name: Create Symphon python job directory
+    become: yes
+    file:
+      path: '{{ symphony_home }}/prediction'
+      state: directory
+      owner: "{{ hadoop.user }}"
+      group: "{{ hadoop.user }}"
+      mode: 'u=rwx,go=rx'
+      recurse: yes
+
+  - name: Unarchive symphony_project for python environment
+    shell: "tar -xvf /home/hadoop/symphony/prediction_wo_venv.tar -C /home/hadoop/symphony/prediction --strip-components=1"
+
+  when: inventory_hostname in groups['master']

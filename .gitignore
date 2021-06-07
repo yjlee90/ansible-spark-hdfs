@@ -54,4 +54,4 @@ Thumbs.db
 
 
 aws-configs/
-roles/install_pyspark/tasks/install_pyspark.yml
+#roles/install_pyspark/tasks/install_pyspark.yml
