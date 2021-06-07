@@ -1,9 +1,0 @@
----
-- hosts:
-    - spark
-  become_user: root
-  become: true 
-  gather_facts: true 
-  
-  roles:
-    - install_spark

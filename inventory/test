@@ -1,0 +1,42 @@
+[deploy]
+localhost
+
+[nodes]
+bigdata-spark-hdfs-4  ansible_host=192.168.65.221
+
+# Master/Slave 구분
+
+[master]
+bigdata-spark-hdfs-4  ansible_host=192.168.65.221 
+
+[worker]
+bigdata-spark-hdfs-4  ansible_host=192.168.65.221
+
+
+
+
+
+# HDFS
+
+[hdfs:children]
+hdfs-namenode
+hdfs-datanode
+
+[hdfs-namenode:children]
+master
+
+[hdfs-datanode:children]
+master
+worker
+
+# SPARK
+
+[spark:children]
+spark-master
+spark-worker
+
+[spark-master:children]
+master
+
+[spark-worker:children]
+worker

@@ -1,0 +1,9 @@
+---
+- hosts:
+    - spark
+  become_user: hadoop
+  become: true 
+  gather_facts: true 
+  
+  roles:
+    - install_spark

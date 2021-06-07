@@ -1,8 +1,0 @@
----
-- name: HDFS, Spark command shell script 
-  file:
-    src: "{{ hadoop.hadoop_home}}/sbin/start-all.sh"
-    dest: "{{ playbook_dir }}/start_all.sh"
-    state: link
-
-

@@ -2,20 +2,30 @@
 - name: include vars
   include_vars: "{{ playbook_dir }}/config.yml"
 
-# ssh, host setting
-- include: register_hosts.yml
-- include: ssh_config.yml
+  # Install Java
+  # Register Hosts
+  # Create necessary user
+  # Install custom python project
+  # Configure SSH 
 
-# clean
+  # Clean
+  
 - name : Remove old install dir
   file : 
     path : "{{ install_dir }}"
     state: absent
-
+  
 - name : Create install dir
   file : 
     path : "{{ install_dir }}"
     state: directory
 
-# install java
+
+    
+- include: register_hosts.yml
+- include: create_user.yml
+- include: ssh_config.yml
 - include: install_java.yml
+
+
+

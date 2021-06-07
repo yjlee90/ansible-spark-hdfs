@@ -1,6 +1,7 @@
 # Essential
 user_session: root
 is_offline: true
+reinstall: False
 
 ansible_user: root
 ansible_ssh_private_key_file: ~/.ssh/id_rsa
@@ -12,12 +13,15 @@ host_key_checking: False
 install_temp_dir: /tmp/ansible-install
 install_dir: /opt
 
+user: hadoop
+user_groups: []             # Optional list of (OS)groups the new spark user should belong to
+user_shell: /bin/bash    # the hdfs user's default shell
+
 # Common
 common:
   java:
     version: 8u291
     java_home: /opt/java/openjdk-8
-    offline_archive_dir: '{{ playbook_dir }}/files'
     archive: "jdk-8u291-linux-x64.tar.gz"
 
 # Hadoop
@@ -33,9 +37,9 @@ hadoop:
   temp_dir: /tmp/hadoop/hdfs/tmp
   hadoop_home : /opt/hadoop/hadoop-2.10.1
   # users
-  user: "hadoop"               # the name of the (OS)user created for spark
+  user: hadoop               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
-  user_shell: "/bin/bash"    # the hdfs user's default shell
+  user_shell: /bin/bash    # the hdfs user's default shell
 
 spark:
   version: 2.4.7
@@ -51,6 +55,7 @@ spark:
   user: "hadoop"               # the name of the (OS)user created for spark
   user_groups: []             # Optional list of (OS)groups the new spark user should belong to
   user_shell: "/bin/bash"    # the spark user's default shell
-
   env_extras: {}
   defaults_extras: {}
+  python:
+    not_installed: true

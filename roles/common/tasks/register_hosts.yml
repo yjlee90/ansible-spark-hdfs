@@ -4,11 +4,15 @@
 #     with_items: "{{ groups.nodes }}"
 
 - name: Add IP address of all hosts to all hosts
+  become: yes
+  become_user: root
   lineinfile:
-    dest: /etc/hosts
-    regexp: '.*{{ item }}$'
-    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    dest: "/etc/hosts"
+    regexp: ".*\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}\t{{ hostvars[item]['ansible_hostname']}}\t{{ hostvars[item]['ansible_hostname']}}"
     state: present
-  when: hostvars[item].ansible_host is defined
-  with_items: "{{ groups.nodes }}"
+    backup: yes
+  register: etchostsupdate
+  when: ansible_hostname != "{{ item }}" or ansible_hostname == "{{ item }}"
+  with_items: "{{groups['nodes']}}"
 

@@ -1,4 +1,6 @@
 spark.master yarn
-spark.eventLog.enabled true
-spark.eventLog.dir hdfs://{{ groups['spark-master'][0] }}:9000/logs/eventLog
-spark.history.fs.logDirectory $SPARK_HOME/logs/eventLog
+#spark.eventLog.enabled true
+#spark.eventLog.dir $SPARK_HOME/logs/eventLog
+#spark.history.fs.logDirectory $SPARK_HOME/logs/eventLog
+spark.master.rest.enabled true
+spark.driver.memory             2g

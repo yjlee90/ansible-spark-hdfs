@@ -1,0 +1,6 @@
+---
+# tasks file for install_pyspark
+- name: include vars
+  include_vars: "{{ playbook_dir }}/config.yml"
+
+- include: install_pyspark.yml

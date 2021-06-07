@@ -1,9 +1,8 @@
-## 프로젝트
-- Ansible-spark-hdfs
+# Ansible-spark-hdfs
+## 개요 
 - ansible을 이용하여 spark-yarn-hdfs 클러스터를 구성한다.
 
-
-## 버전정보
+## 프로그램 버전
 |프로그램|버전|
 |--------|---|
 |Java|openjdk-1.8.291|
@@ -13,55 +12,77 @@
 |Ansible|2.10.9|
 
 <br>
+
+## Ansible Role
+1. common
+2. install_hdfs
+3. install_spark
+4. install_pyspark
+
+
+
+## Ansible Playbook 순서
+1. Deploy 서버 설정
+   - host 파일 (`initialize/` 내에 설정)
+   - `set_ssh.sh` 실행
+   - `inventory/multinode` 설정
+  
+2. Common role
+    - deploy 서버 ssh Key 등록 -> 전체서버
+    - Master 서버 ssh key 등록 -> Slave 서버
+    - `/etc/hosts` 파일 등록
+    - java 설치 파일 복사 및 압축 해제하여 설치
+    - `update-alternatives`를 이용하여 java 설정
+3. HDFS 설치
+    - hadoop 설치 파일 복사 및 압축 해제
+    - hadoop 관련 폴더(name, data 등) 생성
+    - hadoop 설정 파일 복사 및 구성(templates)
+
+4. Spark 설치
+    - Spark 설치 파일 복사 및 압축 해제
+    - Spark 관련 폴더(name, data 등) 생성
+    - Spark 설정 파일 복사 및 구성(templates)
+    - Spark 필요 jar 파일 복사(templates)
+
+5. PySpark 설치
+    - environment.tar.gz 전체 복사 후 압축 해제
+    - `update-alternatives`를 이용하여 기본 python 경로 변경
+
+
 ## TODO
-- [ ] localhost 설치
+- [X] localhost 설치
   - [x] Common 설치
       - [X] Java 설치
-      - [ ] SSH 설정
+      - [x] SSH 설정
   - [x] HDFS 설치
       - [x] Hadoop 설치
       - [x] HDFS 설정
       - [x] Yarn 설정 
-      - [ ] Start, stop 관련 쉘스크립트 만들기, Playbook 끝나면 시작하기
-      - [ ] Playbook 시작 전에 전체 JOB stop 하기
+      - [x] Start, stop 관련 쉘스크립트 만들기, Playbook 끝나면 시작하기
+      - [x] Playbook 시작 전에 전체 JOB stop 하기
   - [X] Spark 설치
-  - [ ] JOB 테스트
-- [ ] Cluster 설치 
-  - [ ] Common 설치
-  - [ ] hdfs 설치
-  - [ ] spark 설치
+  - [x] JOB 테스트
+- [x] Cluster 설치 
+  - [x] Common 설치
+  - [x] hdfs 설치
+  - [x] spark 설치
+  - [x] PySpark 설치
+    - [x] S
+  - [x] 서비스 제어 관련 playbook
+    - [x] start, stop, restart playbook
+    - [x] configuration 변경 적용 playbook
 
 
-# ansible 설치
-`pip3 install ansible`
 
 
-
-# 사용법
-1. inventory 폴더 아래 hosts에 IP, hostname 입력
-2. set_ssh.sh  실행
-
-
-# template 변경사항
-- spark-env.sh.j2 
-  - spark-master-ip 주소 변경 필요
+## 사용법
+1. `initialize/hosts`에 `<IP> <Hostname>` 입력
+2. `set_ssh.sh`  실행
+3. `ansible-playbook -i inventory/multinode install.yml -vv` -> `install.sh` 실행
 
 
-# 안되는 것
-21.05.28
-HDFS datanode 연결 안됨
-spark worker  연결 안됨
-
-
-# inventory
-Category 변경 X
-
-# Role 
-1. deploy_init 
-- ansible deploy server에서 다른 노드들에 접속할 수 있도록 Key를 등록시키는 Role
-
-2. Common
-- 모든 서버에 `/etc/hosts` 에 IP 및 호스트 등록, Master -> Workes 에 접근할 수 있도록 key 등록,
-- Java openjdk 1.8 설치
-- [ ] environment.tar.gz, alternatives 를 이용하여 Python 설치
-
+## 문제점
+- master에 known_host 등록이 자동으로 되지 않음
+  - 처음에 master 서버에 접속하여 서비스 start를 수동으로 하면서 key 등록을 시도해야함.
+  
+- user에 대한 config.yml 정리 필요

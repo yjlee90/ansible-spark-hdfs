@@ -2,16 +2,19 @@
 localhost
 
 [nodes]
-bigdata-spark-hdfs-1  ansible_host=192.168.65.125 
-bigdata-spark-hdfs-2  ansible_host=192.168.65.240
-bigdata-spark-hdfs-3  ansible_host=192.168.65.247
+bigdata-hdfs-spark-1  
+bigdata-hdfs-spark-2
+bigdata-hdfs-spark-3
+
+
+# Master/Slave 구분
 
 [master]
-bigdata-spark-hdfs-1  ansible_host=192.168.65.125
+bigdata-hdfs-spark-1  
 
 [worker]
-bigdata-spark-hdfs-2  ansible_host=192.168.65.240
-bigdata-spark-hdfs-3  ansible_host=192.168.65.247
+bigdata-hdfs-spark-2
+bigdata-hdfs-spark-3
 
 # HDFS
 
@@ -24,7 +27,7 @@ master
 
 [hdfs-datanode:children]
 master
-nodes
+worker
 
 # SPARK
 
@@ -36,4 +39,4 @@ spark-worker
 master
 
 [spark-worker:children]
-nodes
+worker

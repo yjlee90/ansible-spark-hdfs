@@ -1,0 +1,15 @@
+---
+- hosts:
+    - hdfs
+  become_user: hadoop
+  become: true 
+  gather_facts: true 
+  
+  tasks:
+    - name: include vars
+      include_vars: "{{ playbook_dir }}/config.yml"
+
+    - name: check status
+      command: "$JAVA_HOME/bin/jps"
+      register: jps
+    - debug : var=jps.stdout_lines

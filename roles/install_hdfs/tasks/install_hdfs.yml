@@ -1,26 +1,14 @@
 ---
-# - name: Copy and Install Hadoop
-#   become: yes
-#   unarchive:
-#     src: "{{ item }}"
-#     dest: "{{ hadoop_home }}"
-#     mode: 0755
-#     extra_opts: [--strip-components=1]
-#   with_items:
-#     - "{{ hadoop_install_file }}"
-#   when: 
-#     - is_offline
-
 - name: Set HDFS fact
   set_fact: hdfs_installed=True
 
-- name: Create service account for HDFS
-  user: 
-    name: "{{ hadoop.user }}"
-    system: yes
-    shell: "{{ hadoop.user_shell }}"
-    state: present
-    groups: "{{hadoop.user_groups | join(',')}}"
+#- name: Create service account for HDFS
+#  user: 
+#    name: "{{ hadoop.user }}"
+#    system: yes
+#    shell: "{{ hadoop.user_shell }}"
+#    state: present
+#    groups: "{{hadoop.user_groups | join(',')}}"
 
 - name: Define number of nodes
   set_fact: number_of_nodes="{{groups['hdfs-datanode'] | length | int }}"
@@ -53,6 +41,7 @@
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
   become: true
+  become_user: root
 
 - name: Remove pre-existent hadoop name directory
   file:
@@ -69,6 +58,7 @@
     owner: "{{ hadoop.user }}"
     group: "{{ hadoop.user }}"
   become: True
+  become_user: root
 
 - name: Remove pre-existent hadoop temp directory
   file:
@@ -185,9 +175,9 @@
   when: inventory_hostname in groups['hdfs-namenode']
 
 
-- name: "Starting HDFS daemons"
-  ignore_errors: yes
-  command: "{{ hadoop.hadoop_home}}/sbin/start-all.sh"
-  become: true
-  become_user: hadoop
-  when: inventory_hostname in groups['hdfs-namenode']
+# - name: "Starting HDFS daemons"
+#   ignore_errors: yes
+#   command: "{{ hadoop.hadoop_home}}/sbin/start-all.sh"
+#   become: true
+#   become_user: hadoop
+#   when: inventory_hostname in groups['hdfs-namenode']

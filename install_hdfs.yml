@@ -1,9 +1,0 @@
----
-- hosts:
-    - hdfs
-  become_user: hadoop
-  become: true 
-  gather_facts: true 
-  
-  roles:
-    - install_hdfs

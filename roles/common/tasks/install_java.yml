@@ -1,8 +1,11 @@
+---
 - name: Check if java is installed
   command: java -version
   become_user: root
   register: is_installed
   ignore_errors: True
+
+- debug: msg=is_installed
 
 - name: Check if java is installed
   set_fact:
@@ -72,4 +75,3 @@
       path: /etc/environment
       block: 
         export JAVA_HOME="{{ java_home }}" 
-

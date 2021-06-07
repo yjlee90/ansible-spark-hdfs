@@ -1,9 +1,0 @@
----
-- hosts:
-    - deploy
-  become_user: root
-  become: true 
-  gather_facts: true 
-  
-  roles:
-    - post_deploy

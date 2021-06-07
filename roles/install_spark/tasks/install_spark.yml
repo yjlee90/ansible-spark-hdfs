@@ -1,10 +1,10 @@
 ---
-- name: Create service account for Spark
-  user: name={{ spark.user }}
-        system=yes
-        shell={{ spark.user_shell }}
-        state=present
-        groups="{{ spark.user_groups | join(',') }}"
+# - name: Create service account for Spark
+#   user: name={{ spark.user }}
+#         system=yes
+#         shell={{ spark.user_shell }}
+#         state=present
+#         groups="{{ spark.user_groups | join(',') }}"
 
 - name: set spark archive fact
   set_fact:
@@ -17,6 +17,7 @@
     owner: "{{ spark.user }}"
     group: "{{ spark.user }}"
   become: true
+  become_user: root
 
 # Offline
 - name: Copy and install spark offline
@@ -28,10 +29,12 @@
     extra_opts: [--strip-components=1]
   when:
     - is_offline
+  ignore_errors: yes
+
 
 
 - name: define number of spark workers
-  set_fact: number_of_workers="{{ groups['workers'] | length | int }}"
+  set_fact: number_of_workers="{{ groups['worker'] | length | int }}"
 
 
 - name: stop spark
@@ -89,6 +92,11 @@
     src: "spark-defaults-conf.j2"
     dest: "{{ spark.install_dir }}/conf/spark-defaults.conf"
 
+- name: set fairscheduler.xml
+  template: 
+    src: "fairscheduler.xml"
+    dest: "{{ spark.install_dir }}/conf/fairscheduler.xml"
+
 - name: set slaves
   template:
     src: "slaves.j2"
@@ -100,12 +108,19 @@
     src: spark-profile.sh.j2
     dest: /etc/profile.d/spark-profile.sh
     mode: 0644
+  become: true
+  become_user: root
 
 # External jar libaray 
 - name: External jar library settings
-  copy:
-    src: "{{ item }}"
-    dest: "{{ spark.spark_home }}/jars"
+  command: "cp {{ item }} {{ spark.spark_home }}/jars"
   with_items:
   - "{{ hadoop.hadoop_home}}/share/hadoop/common/lib/slf4j-api-1.7.25.jar"
   - "{{ hadoop.hadoop_home}}/share/hadoop/common/lib/slf4j-log4j12-1.7.25.jar"
+
+
+- name: "Starting spark daemons"
+  command: "{{ spark.spark_home }}/sbin/start-all.sh"
+  become: true
+  become_user: hadoop
+  when: inventory_hostname in groups['spark-master']

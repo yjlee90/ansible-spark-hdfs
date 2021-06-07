@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+
     <property>
         <name>dfs.replication</name>
         <value>{{ hdfs_replication_factor }}</value>
@@ -7,15 +8,19 @@
 
     <property>
          <name>dfs.data.dir</name>
-         <value>file://{{ hadoop.data_dir }}</value>
+         <value>{{ hadoop.data_dir }}</value>
          <final>true</final>
     </property>
 
     <property>
         <name>dfs.name.dir</name>
-        <value>file://{{ hadoop.name_dir }}</value>
+        <value>{{ hadoop.name_dir }}</value>
         <final>true</final>
     </property>
-
+    	
+    <property>
+        <name>dfs.namenode.http-address</name>
+        <value>0.0.0.0:9870</value> 
+    </property>
 
 </configuration>

@@ -1,5 +1,15 @@
 ---
 - block:
+  - name: Create ssh directory
+    become: yes
+    file:
+      path: "/home/{{ user }}/.ssh"
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user }}" 
+      mode: 'u=rwx,go=rx'
+      recurse: yes
+
   - name: Generate SSH key
     openssh_keypair:
       path: "~/.ssh/id_rsa"
@@ -8,7 +18,7 @@
       state: present
       force: no
     become: True
-    become_user: "{{ hadoop.user }}"
+    become_user: "{{ user }}"
 
   - name: Fetch all public ssh keys
     shell: cat ~/.ssh/id_rsa.pub
@@ -16,7 +26,7 @@
     tags:
       - ssh
     become: True
-    become_user: "{{ hadoop.user }}"
+    become_user: "{{ user }}"
     
   - name: Check keys
     debug: msg= "{{ ssh_keys.stdout }}"
@@ -33,6 +43,24 @@
       - "{{ ssh_keys.stdout }}"
       - "{{ groups['nodes']}}"
     become: True
-    become_user: "{{ hadoop.user }}"
+    become_user: "{{ user }}"
 
+  # - name: Register known_hosts
+  #   command: /usr/bin/ssh-keyscan -t ecdsa {{ item }}
+  #   with_items:
+  #     - "{{ groups['worker'] }}"
+  #   register: keyscan
+
+  # - debug:
+  #     msg: "{{ keyscan }}"
+  
+  # - name: Register known_hosts ctd
+  #   become: True
+  #   become_user: "{{ user }}"
+  #   lineinfile:
+  #     name: ~/.ssh/know_hosts
+  #     create: yes
+  #     line: "{{ item }}"
+  #   with_items:
+  #     - "{{ keyscan.stdout }}"
   when: inventory_hostname in groups['master']

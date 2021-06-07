@@ -1,0 +1,44 @@
+---
+- hosts:
+    - hdfs
+  become_user: hadoop
+  become: true 
+  gather_facts: true 
+  
+  tasks:
+    - name: include vars
+      include_vars: "{{ playbook_dir }}/config.yml"
+
+    - name: check status
+      command: "$JAVA_HOME/bin/jps"
+      register: jps
+    - debug : var=jps.stdout_lines
+
+    # HDFS STOP ALL
+    - name: stop all.sh
+      shell: "{{ item }}"
+      ignore_errors: true
+      with_items:
+        - "sh {{ hadoop.hadoop_home }}/sbin/stop-dfs.sh"
+        - "sh {{ hadoop.hadoop_home }}/sbin/stop-balancer.sh"
+        - "sh {{ hadoop.hadoop_home }}/sbin/stop-yarn.sh"
+      when: inventory_hostname in groups['hdfs-namenode']
+
+    # SPARK STOP ALL
+    - name: stop all.sh
+      shell: "{{ item }}"
+      ignore_errors: true
+      become: true 
+      become_user: hadoop
+      with_items:
+        - "sh {{ spark.spark_home}}/sbin/stop-master.sh"
+        - "sh {{ spark.spark_home}}/sbin/stop-slaves.sh"
+        - "sh {{ spark.spark_home}}/sbin/stop-history-server.sh"
+        - "sh {{ spark.spark_home}}/sbin/stop-shuffle-service.sh"
+      when: inventory_hostname in groups['master']
+
+    - name: check status
+      command: "$JAVA_HOME/bin/jps"
+      register: jps
+
+    - debug : var=jps.stdout_lines

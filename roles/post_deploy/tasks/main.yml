@@ -1,8 +1,0 @@
----
-# tasks file for post-deploy
-
-- name: include vars
-  include_vars: "{{ playbook_dir }}/config.yml"
-
-- include : post_deploy.yml
-
