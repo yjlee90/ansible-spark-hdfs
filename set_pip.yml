@@ -1,0 +1,29 @@
+---
+- hosts:
+    - nodes
+  become_user: hadoop
+  become: true 
+  gather_facts: true 
+  
+  tasks:
+    - name: Set symphony fact
+      set_fact:
+        symphony_home: /home/hadoop/symphony
+        
+    - name: update alternatives for pip 
+      become: yes
+      become_user: root
+      alternatives:
+        name: pip 
+        path: "{{ symphony_home }}/venv/bin/pip3"
+        link: /usr/bin/pip
+        priority: 10000
+
+    - name: update alternatives for pip3
+      become: yes
+      become_user: root
+      alternatives:
+        name: pip3
+        path: "{{ symphony_home }}/venv/bin/pip3"
+        link: /usr/bin/pip3
+        priority: 10000

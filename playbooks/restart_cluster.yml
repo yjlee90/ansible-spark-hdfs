@@ -7,7 +7,7 @@
   
   tasks:
     - name: include vars
-      include_vars: "{{ playbook_dir }}/config.yml"
+      include_vars: "{{ playbook_dir }}/../config.yml"
 
     - name: check status
       command: "$JAVA_HOME/bin/jps"
@@ -19,9 +19,9 @@
       shell: "{{ item }}"
       ignore_errors: true
       with_items:
-        - "sh {{ hadoop.hadoop_home }}/sbin/stop-dfs.sh"
-        - "sh {{ hadoop.hadoop_home }}/sbin/stop-balancer.sh"
-        - "sh {{ hadoop.hadoop_home }}/sbin/stop-yarn.sh"
+        - "bssh {{ hadoop.hadoop_home }}/sbin/stop-dfs.sh"
+        - "bash {{ hadoop.hadoop_home }}/sbin/stop-balancer.sh"
+        - "bash {{ hadoop.hadoop_home }}/sbin/stop-yarn.sh"
       when: inventory_hostname in groups['hdfs-namenode']
 
     # SPARK STOP ALL
@@ -31,10 +31,10 @@
       become: true 
       become_user: hadoop
       with_items:
-        - "sh {{ spark.spark_home}}/sbin/stop-master.sh"
-        - "sh {{ spark.spark_home}}/sbin/stop-slaves.sh"
-        - "sh {{ spark.spark_home}}/sbin/stop-history-server.sh"
-        - "sh {{ spark.spark_home}}/sbin/stop-shuffle-service.sh"
+        - "bash {{ spark.spark_home}}/sbin/stop-master.sh"
+        - "bash {{ spark.spark_home}}/sbin/stop-slaves.sh"
+        - "bash {{ spark.spark_home}}/sbin/stop-history-server.sh"
+        - "bash {{ spark.spark_home}}/sbin/stop-shuffle-service.sh"
       when: inventory_hostname in groups['master']
 
     - name: check status
@@ -49,20 +49,20 @@
       become: true 
       become_user: hadoop
       with_items:
-        - "sh {{ spark.spark_home}}/sbin/start-master.sh"
-        - "sh {{ spark.spark_home}}/sbin/start-slaves.sh"
-        - "sh {{ spark.spark_home}}/sbin/start-history-server.sh"
-        - "sh {{ spark.spark_home}}/sbin/start-shuffle-service.sh"
+        - "bash {{ spark.spark_home}}/sbin/start-master.sh"
+        - "bash {{ spark.spark_home}}/sbin/start-slaves.sh"
+        - "bash {{ spark.spark_home}}/sbin/start-history-server.sh"
+        - "bash {{ spark.spark_home}}/sbin/start-shuffle-service.sh"
       when: inventory_hostname in groups['spark-master']
 
     # HDFS STOP ALL
     - name: start hadoop services
-      command: "{{ item }}"
+      shell : "{{ item }}"
       ignore_errors: true
       with_items:
-        - "{{ hadoop.hadoop_home }}/sbin/start-dfs.sh"
-        - "{{ hadoop.hadoop_home }}/sbin/start-balancer.sh"
-        - "{{ hadoop.hadoop_home }}/sbin/start-yarn.sh"
+        - "bash {{ hadoop.hadoop_home }}/sbin/start-dfs.sh"
+        - "bash {{ hadoop.hadoop_home }}/sbin/start-balancer.sh"
+        - "bash {{ hadoop.hadoop_home }}/sbin/start-yarn.sh"
       when: inventory_hostname in groups['hdfs-namenode']
 
     - name: check status

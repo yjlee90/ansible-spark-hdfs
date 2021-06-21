@@ -1,0 +1,85 @@
+---
+- hosts:
+    - hdfs
+  become_user: hadoop
+  become: true 
+  gather_facts: true 
+  
+  tasks:
+    - name: include vars
+      include_vars: "{{ playbook_dir }}/config.yml"
+
+    - name: check status
+      command: "$JAVA_HOME/bin/jps"
+      register: jps
+    - debug : var=jps.stdout_lines
+
+
+    - name: Define number of nodes
+      set_fact: number_of_nodes="{{groups['hdfs-datanode'] | length | int }}"
+
+    - debug:
+        msg: "Number of data nodes: {{ number_of_nodes }}"
+
+    - name: Disable HDFS replication in single node
+      set_fact: hdfs_replication_factor=1
+      when: number_of_nodes | int < 3
+
+    - name: Enable HDFS replication when cluster has more then three nodes
+      set_fact: hdfs_replication_factor=3
+      when: number_of_nodes | int >= 3
+
+    - debug:
+        msg: "HDFS replication factor: {{ hdfs_replication_factor }}"
+
+    # Setting yarns
+    - name: set core-site.xml
+      template:
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/core-site.xml.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/core-site.xml"
+
+    - name: set hadoop-env.sh
+      template:
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/hadoop-env.sh.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/hadoop-env.sh"
+
+    - name: set hdfs-site.xml
+      template: 
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/hdfs-site.xml.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/hdfs-site.xml"
+
+    - name: set mapred-site.xml
+      template: 
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/mapred-site.xml.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/mapred-site.xml"
+
+    - name: set yarn-site.xml
+      template: 
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/yarn-site.xml.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/yarn-site.xml"
+
+    - name: set slaves
+      template:
+        src: "{{ playbook_dir }}/roles/install_hdfs/templates/slaves.j2"
+        dest: "{{ hadoop.install_dir }}/etc/hadoop/slaves"
+
+    # Setting spark 
+    - name: set spark-env.sh
+      template:
+        src: "{{ playbook_dir }}/roles/install_spark/templates/spark-env-sh.j2"
+        dest: "{{ spark.install_dir }}/conf/spark-env.sh"
+
+    - name: set spark-defaults.conf
+      template: 
+        src: "{{ playbook_dir }}/roles/install_spark/templates/spark-defaults-conf.j2"
+        dest: "{{ spark.install_dir }}/conf/spark-defaults.conf"
+
+    - name: set fairscheduler.xml
+      template: 
+        src: "{{ playbook_dir }}/roles/install_spark/templates/fairscheduler.xml"
+        dest: "{{ spark.install_dir }}/conf/fairscheduler.xml"
+
+    - name: set slaves
+      template:
+        src: "{{ playbook_dir }}/roles/install_spark/templates/slaves.j2"
+        dest: "{{ spark.install_dir }}/conf/slaves"

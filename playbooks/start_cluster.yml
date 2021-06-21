@@ -20,10 +20,10 @@
       become: true 
       become_user: hadoop
       with_items:
-        - "sh {{ spark.spark_home }}/sbin/start-master.sh"
-        - "sh {{ spark.spark_home }}/sbin/start-slaves.sh"
-        - "sh {{ spark.spark_home }}/sbin/start-history-server.sh"
-        - "sh {{ spark.spark_home }}/sbin/start-shuffle-service.sh"
+        - "bash {{ spark.spark_home }}/sbin/start-master.sh"
+        - "bash {{ spark.spark_home }}/sbin/start-slaves.sh"
+        - "bash {{ spark.spark_home }}/sbin/start-history-server.sh"
+        - "bash {{ spark.spark_home }}/sbin/start-shuffle-service.sh"
       when: inventory_hostname in groups['spark-master']
 
     - name: check status

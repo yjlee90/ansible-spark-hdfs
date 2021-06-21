@@ -34,33 +34,4 @@
         <name>yarn.acl.enable</name>
         <value>0</value>
     </property>
-
-
-    <property>
-        <name>yarn.nodemanager.resource.cpu-vcores</name>
-        <value>8</value>
-    </property>    
-
-    <property>
-        <name>yarn.scheduler.maximum-allocation-mb</name>
-        <value>23424</value>
-    </property>
-
-    <property>
-        <name>yarn.nodemanager.resource.memory-mb</name>
-        <value>11712</value>
-        <!-- 16g * 70% -->
-    </property>
-
-    <property>
-        <name>yarn.scheduler.minimum-allocation-mb</name>
-        <value>2048</value>
-    </property>
-
-    <property>
-        <name>yarn.scheduler.maximum-allocation-vcores</name>
-        <value>128</value>
-    </property>
-
-
 </configuration>

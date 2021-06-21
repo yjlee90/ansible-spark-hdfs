@@ -7,7 +7,7 @@
   
   tasks:
     - name: include vars
-      include_vars: "{{ playbook_dir }}/config.yml"
+      include_vars: "{{ playbook_dir }}/../config.yml"
 
     - name: check status
       command: "$JAVA_HOME/bin/jps"

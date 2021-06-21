@@ -71,6 +71,8 @@
   - [x] 서비스 제어 관련 playbook
     - [x] start, stop, restart playbook
     - [x] configuration 변경 적용 playbook
+  - [ ] 시스템 서비스화 (서버 재기동시 자동 재시작)
+
 
 
 
@@ -86,3 +88,8 @@
   - 처음에 master 서버에 접속하여 서비스 start를 수동으로 하면서 key 등록을 시도해야함.
   
 - user에 대한 config.yml 정리 필요
+
+## 이슈사항
+- sparkStaging 폴더에 계속해서 쌓이는 것 같음
+  - spark-defualt.conf에 추가해야할 듯
+  - `spark.yarn.preserve.staging.files=false` 
