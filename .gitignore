@@ -49,6 +49,7 @@ Thumbs.db
 *.wmv
 
 .gitignore
+*.tar
 *.tgz
 *.tar.gz
 
